@@ -4,7 +4,6 @@ import org.junit.Assert
 import uk.co.akm.lib.plot.functions.writeToFileAsPNG
 import uk.co.akm.lib.plot.model.Graph
 import uk.co.akm.lib.plot.model.PlotDim
-import java.awt.Image
 import java.awt.image.RenderedImage
 import java.io.File
 
