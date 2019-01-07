@@ -10,7 +10,7 @@ import java.awt.image.RenderedImage
  *
  * Created by Thanos Mavroidis on 05/01/2019.
  */
-class Graph(val background: ColouredItem<PlotDim>, val axes: ColouredItem<AxesDim>) {
+class Graph(val background: ColouredItem<PlotDim>, val axes: ColouredItem<AxesDim>? = null) {
     private val plots = ArrayList<ColouredItem<Path>>()
 
     fun addPlot(plot: ColouredItem<Path>) = plots.add(plot)

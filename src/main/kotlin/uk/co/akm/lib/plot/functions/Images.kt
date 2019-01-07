@@ -23,7 +23,11 @@ fun plotGraph(graph: Graph): RenderedImage {
 
 private fun plot(graph: Graph, pixels: PixelSetter) {
     setBackGroundPixels(graph.background, pixels)
-    setAxesPixels(graph.background.data, graph.axes, pixels)
+
+    if (graph.axes != null) {
+        setAxesPixels(graph.background.data, graph.axes, pixels)
+    }
+
     graph.getPlots().forEach { setPathPixels(it, graph.background.data, pixels) }
 }
 
