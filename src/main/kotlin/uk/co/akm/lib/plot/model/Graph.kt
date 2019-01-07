@@ -1,6 +1,8 @@
 package uk.co.akm.lib.plot.model
 
+import uk.co.akm.lib.plot.functions.buildPathForFunction
 import uk.co.akm.lib.plot.functions.plotGraph
+import java.awt.Color
 import java.awt.image.RenderedImage
 
 /**
@@ -14,6 +16,10 @@ class Graph(val background: ColouredItem<PlotDim>, val axes: ColouredItem<AxesDi
     fun addPlot(plot: ColouredItem<Path>) = plots.add(plot)
 
     fun addPlots(plots: Collection<ColouredItem<Path>>) = this.plots.addAll(plots)
+
+    fun addFunctionPlot(f: (Double) -> Double, step: Double, colour: Color) {
+        plots.add(buildPathForFunction(background.data, f, step, colour))
+    }
 
     fun getPlots(): Iterator<ColouredItem<Path>> = plots.iterator()
 
