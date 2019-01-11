@@ -1,8 +1,11 @@
 package uk.co.akm.lib.plot.functions
 
+import uk.co.akm.lib.plot.draw.ImageDrawer
+import uk.co.akm.lib.plot.draw.ImageDrawerImpl
 import uk.co.akm.lib.plot.model.Graph
 import uk.co.akm.lib.plot.model.PixelSetter
 import uk.co.akm.lib.plot.model.impl.BufferedImagePixelSetter
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.awt.image.RenderedImage
 import java.io.File
@@ -29,6 +32,31 @@ private fun plot(graph: Graph, pixels: PixelSetter) {
     }
 
     graph.getPlots().forEach { setPathPixels(it, graph.background.data, pixels) }
+}
+
+fun plotGraph2(graph: Graph): RenderedImage {
+    val image = BufferedImage(graph.background.data.width, graph.background.data.height, BufferedImage.TYPE_INT_ARGB)
+    val g = image.graphics
+
+    try {
+        plot(graph, g)
+    } finally {
+        g.dispose()
+    }
+
+    return image
+}
+
+private fun plot(graph: Graph, g: Graphics) {
+    val imageDrawer: ImageDrawer = ImageDrawerImpl(graph.background)
+
+    imageDrawer.drawBackground(g)
+
+    if (graph.axes != null) {
+        imageDrawer.drawAxes(graph.axes, g)
+    }
+
+    graph.getPlots().forEach { imageDrawer.drawPath(it, g) }
 }
 
 fun writeToFileAsPNG(image: RenderedImage, filePath: String): File {
