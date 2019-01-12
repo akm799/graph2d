@@ -15,26 +15,7 @@ import javax.imageio.ImageIO
  * Created by Thanos Mavroidis on 05/01/2019.
  */
 
-
 fun plotGraph(graph: Graph): RenderedImage {
-    val image = BufferedImage(graph.background.data.width, graph.background.data.height, BufferedImage.TYPE_INT_ARGB)
-    val pixels = BufferedImagePixelSetter(image)
-    plot(graph, pixels)
-
-    return image
-}
-
-private fun plot(graph: Graph, pixels: PixelSetter) {
-    setBackGroundPixels(graph.background, pixels)
-
-    if (graph.axes != null) {
-        setAxesPixels(graph.background.data, graph.axes, pixels)
-    }
-
-    graph.getPlots().forEach { setPathPixels(it, graph.background.data, pixels) }
-}
-
-fun plotGraph2(graph: Graph): RenderedImage {
     val image = BufferedImage(graph.background.data.width, graph.background.data.height, BufferedImage.TYPE_INT_ARGB)
     val g = image.graphics
 
@@ -57,6 +38,25 @@ private fun plot(graph: Graph, g: Graphics) {
     }
 
     graph.getPlots().forEach { imageDrawer.drawPath(it, g) }
+    graph.getTexts().forEach { imageDrawer.drawText(it, g) }
+}
+
+fun plotGraphDirect(graph: Graph): RenderedImage {
+    val image = BufferedImage(graph.background.data.width, graph.background.data.height, BufferedImage.TYPE_INT_ARGB)
+    val pixels = BufferedImagePixelSetter(image)
+    plotDirect(graph, pixels)
+
+    return image
+}
+
+private fun plotDirect(graph: Graph, pixels: PixelSetter) {
+    setBackGroundPixels(graph.background, pixels)
+
+    if (graph.axes != null) {
+        setAxesPixels(graph.background.data, graph.axes, pixels)
+    }
+
+    graph.getPlots().forEach { setPathPixels(it, graph.background.data, pixels) }
 }
 
 fun writeToFileAsPNG(image: RenderedImage, filePath: String): File {

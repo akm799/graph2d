@@ -3,11 +3,9 @@ package uk.co.akm.lib.plot.draw
 import uk.co.akm.lib.plot.functions.X_INDEX
 import uk.co.akm.lib.plot.functions.Y_INDEX
 import uk.co.akm.lib.plot.functions.buildPathsForAxes
-import uk.co.akm.lib.plot.model.AxesDim
-import uk.co.akm.lib.plot.model.ColouredItem
-import uk.co.akm.lib.plot.model.Path
-import uk.co.akm.lib.plot.model.PlotDim
+import uk.co.akm.lib.plot.model.*
 import java.awt.Color
+import java.awt.Font
 import java.awt.Graphics
 
 /**
@@ -21,6 +19,7 @@ class ImageDrawerImpl(private val background: ColouredItem<PlotDim>) : ImageDraw
     private val noValue = -1
     private val buffer1 = arrayOf(noValue, noValue)
     private val buffer2 = arrayOf(noValue, noValue)
+    private val buffer3 = arrayOf(noValue.toDouble(), noValue.toDouble())
 
     override fun drawBackground(g: Graphics) {
         setColourIfRequires(background.colour, g)
@@ -39,6 +38,21 @@ class ImageDrawerImpl(private val background: ColouredItem<PlotDim>) : ImageDraw
             drawContinuousPath(path.data, g)
         } else {
             drawNonContinuousPath(path.data, g)
+        }
+    }
+
+    override fun drawText(text: ColouredItem<TextItem>, g: Graphics) {
+        setColourIfRequires(text.colour, g)
+        g.font = Font(null, Font.PLAIN, text.data.size)
+        drawText(text.data, g)
+    }
+
+    private fun drawText(text: TextItem, g: Graphics) {
+        buffer3[X_INDEX] = text.x
+        buffer3[Y_INDEX] = text.y
+
+        if (toScreenCoordinates(buffer3, buffer1)) {
+            g.drawString(text.text, buffer1[X_INDEX], buffer1[Y_INDEX])
         }
     }
 

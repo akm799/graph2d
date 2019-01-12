@@ -12,6 +12,7 @@ import java.awt.image.RenderedImage
  */
 class Graph(val background: ColouredItem<PlotDim>, val axes: ColouredItem<AxesDim>? = null) {
     private val plots = ArrayList<ColouredItem<Path>>()
+    private val texts = ArrayList<ColouredItem<TextItem>>()
 
     fun addPlot(plot: ColouredItem<Path>) = plots.add(plot)
 
@@ -21,9 +22,16 @@ class Graph(val background: ColouredItem<PlotDim>, val axes: ColouredItem<AxesDi
         plots.add(buildPathForFunction(background.data, f, step, colour))
     }
 
+    fun addText(text: ColouredItem<TextItem>) = texts.add(text)
+
     fun getPlots(): Iterator<ColouredItem<Path>> = plots.iterator()
 
-    fun clearPlots() = plots.clear()
+    fun getTexts(): Iterator<ColouredItem<TextItem>> = texts.iterator()
+
+    fun clear() {
+        plots.clear()
+        texts.clear()
+    }
 
     /**
      * Returns the image of the plotted graph.

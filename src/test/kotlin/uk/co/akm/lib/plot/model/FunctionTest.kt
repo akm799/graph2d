@@ -38,6 +38,15 @@ class FunctionTest {
         underTest.addFunctionPlot(f1, xStep, Color.RED)
         underTest.addFunctionPlot(f2, xStep, Color.GREEN)
 
+        val redLine = arrayOf(arrayOf(-Math.PI + 0.15, 0.83), arrayOf(-Math.PI + 0.45, 0.83))
+        underTest.addPlot(ColouredItem(Path(redLine), Color.RED))
+
+        val greenLine = arrayOf(arrayOf(-Math.PI + 0.15, 0.63), arrayOf(-Math.PI + 0.45, 0.63))
+        underTest.addPlot(ColouredItem(Path(greenLine), Color.GREEN))
+
+        underTest.addText(ColouredItem(TextItem("cos(x)", -Math.PI + 0.5, 0.8, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("sin(x)", -Math.PI + 0.5, 0.6, 12), Color.BLACK))
+
         testGraphPlot(underTest, "trigs")
     }
 }
