@@ -80,7 +80,7 @@ class ImageDrawerImpl(private val background: ColouredItem<PlotDim>) : ImageDraw
         }
 
         screenCoordinates[X_INDEX] = x
-        screenCoordinates[Y_INDEX] = plot.height - y
+        screenCoordinates[Y_INDEX] = plot.height - y - 1
 
         return true
     }
