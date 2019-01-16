@@ -49,4 +49,41 @@ class FunctionTest {
 
         testGraphPlot(underTest, "trigs")
     }
+
+    @Test
+    fun shouldPlotSigmoids() {
+        val dimensions = PlotDim(560, 280, -15.0, 15.0, 0.0, 10.0)
+        val axesDim = AxesDim(0.0, 0.0, 1.0, 1.0, 0.2, 0.2)
+
+        val underTest = Graph(ColouredItem(dimensions, Color.WHITE), ColouredItem(axesDim, Color.BLACK))
+
+        val a = 10.0
+        val r = 0.5
+        val c = 0.0
+        val f1 = { x: Double -> a/(1 + Math.exp(-r*(x - c))) }
+        val f2 = { x: Double -> a/(1 + Math.exp( r*(x - c))) }
+
+        val xStep = 0.01
+        underTest.addFunctionPlot(f1, xStep, Color.RED)
+        underTest.addFunctionPlot(f2, xStep, Color.GREEN)
+
+        val redLine = arrayOf(arrayOf(-14.5, 7.14), arrayOf(-12.3, 7.14))
+        underTest.addPlot(ColouredItem(Path(redLine), Color.RED))
+
+        val greenLine = arrayOf(arrayOf(-14.5, 6.64), arrayOf(-12.3, 6.64))
+        underTest.addPlot(ColouredItem(Path(greenLine), Color.GREEN))
+
+        underTest.addText(ColouredItem(TextItem("f(x) = a/[1 + exp(-r(x - c))]", -14.5, 8.5, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("a = 10,  c = 0", -12.0, 7.5, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("r =  0.5", -12.0, 7.0, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("r = -0.5", -12.0, 6.5, 12), Color.BLACK))
+
+        underTest.addText(ColouredItem(TextItem("yMax = 10", 11.0, 9.5, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("xMax = 15", 11.0, 9.0, 12), Color.BLACK))
+
+        underTest.addText(ColouredItem(TextItem("yMin =   0", -14.5, 1.0, 12), Color.BLACK))
+        underTest.addText(ColouredItem(TextItem("xMin = -15", -14.5, 0.5, 12), Color.BLACK))
+
+        testGraphPlot(underTest, "sigmoids")
+    }
 }
