@@ -3,8 +3,6 @@ package uk.co.akm.lib.plot.functions
 import uk.co.akm.lib.plot.draw.ImageDrawer
 import uk.co.akm.lib.plot.draw.ImageDrawerImpl
 import uk.co.akm.lib.plot.model.Graph
-import uk.co.akm.lib.plot.model.PixelSetter
-import uk.co.akm.lib.plot.model.impl.BufferedImagePixelSetter
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.awt.image.RenderedImage
@@ -39,24 +37,6 @@ private fun plot(graph: Graph, g: Graphics) {
 
     graph.getPlots().forEach { imageDrawer.drawPath(it, g) }
     graph.getTexts().forEach { imageDrawer.drawText(it, g) }
-}
-
-fun plotGraphDirect(graph: Graph): RenderedImage {
-    val image = BufferedImage(graph.background.data.width, graph.background.data.height, BufferedImage.TYPE_INT_ARGB)
-    val pixels = BufferedImagePixelSetter(image)
-    plotDirect(graph, pixels)
-
-    return image
-}
-
-private fun plotDirect(graph: Graph, pixels: PixelSetter) {
-    setBackGroundPixels(graph.background, pixels)
-
-    if (graph.axes != null) {
-        setAxesPixels(graph.background.data, graph.axes, pixels)
-    }
-
-    graph.getPlots().forEach { setPathPixels(it, graph.background.data, pixels) }
 }
 
 fun writeToFileAsPNG(image: RenderedImage, filePath: String): File {
