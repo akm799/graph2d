@@ -23,6 +23,8 @@ class TransformsImpl(private val r: Double) : Transforms {
 
     override fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>) {
         point2d[Transforms.X_INDEX] = r * coordinates[Coordinates.LON_INDEX]
-        point2d[Transforms.Y_INDEX] = r * Math.tan(coordinates[Coordinates.LAT_INDEX])
+        point2d[Transforms.Y_INDEX] = fromLatToMercatorY(coordinates[Coordinates.LAT_INDEX])
     }
+
+    override fun fromLatToMercatorY(lat: Double): Double = r * Math.tan(lat)
 }

@@ -16,4 +16,6 @@ interface Transforms {
     fun from3dPointToCoordinates(point3d: Array<Double>, coordinates: Array<Double>)
 
     fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>)
+
+    fun fromLatToMercatorY(lat: Double): Double
 }
