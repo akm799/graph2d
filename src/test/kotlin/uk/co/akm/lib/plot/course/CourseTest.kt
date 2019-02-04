@@ -6,6 +6,7 @@ import uk.co.akm.lib.plot.course.impl.TransformsImpl
 import uk.co.akm.lib.plot.model.*
 import uk.co.akm.lib.plot.testGraphPlot
 import java.awt.Color
+import java.text.DecimalFormat
 
 /**
  * Created by Thanos Mavroidis on 28/01/2019.
@@ -23,6 +24,9 @@ class CourseTest {
     private val pixelWidth = 480
     private val pixelHeight = 720
 
+    private val axisMarkerTextSize = 8
+    private val degFormat = DecimalFormat("0")
+
     @Test
     fun shouldPlotCourse() {
         plotCourse(80.0, 50.0, -77.5, 50.0, 77.5, 100)
@@ -36,61 +40,91 @@ class CourseTest {
             endLonDeg: Double,
             n: Int) {
 
-        val latMax = degToRad(latMaxDeg)
-        val start = Coordinates(degToRad(startLatDeg), degToRad(startLonDeg))
-        val end = Coordinates(degToRad(endLatDeg), degToRad(endLonDeg))
-        plotCourse(latMax, start, end, n)
-    }
-
-    private fun plotCourse(latMax: Double, start: Coordinates, end: Coordinates, n: Int) {
-        if (Math.abs(start.lat) >= latMax || Math.abs(end.lat) >= latMax) {
-            throw IllegalArgumentException("Input latitude exceeds the maximum allowed value.")
+        if (Math.abs(startLatDeg) >= latMaxDeg || Math.abs(endLatDeg) >= latMaxDeg) {
+            throw IllegalArgumentException("Input (start or end) latitude exceeds the maximum allowed value.")
         }
 
+        val start = Coordinates(degToRad(startLatDeg), degToRad(startLonDeg))
+        val end = Coordinates(degToRad(endLatDeg), degToRad(endLonDeg))
+        plotCourse(latMaxDeg, start, end, n)
+    }
+
+    private fun plotCourse(latMaxDeg: Double, start: Coordinates, end: Coordinates, n: Int) {
         val lonSpacing = degToRad(lonSpacingDeg)
         val lonSpacingHeight = degToRad(lonSpacingHeightDeg)
         val axesDim = AxesDim(0.0, 0.0, lonSpacing, 0.0, lonSpacingHeight, 0.0)
 
+        val latMax = degToRad(latMaxDeg)
         val yMax = transforms.fromLatToMercatorY(latMax)
         val dimensions = PlotDim(pixelWidth, pixelHeight, -Math.PI, Math.PI, -yMax, yMax)
         val plot = Graph(ColouredItem(dimensions, Color.WHITE), ColouredItem(axesDim, Color.BLACK))
 
-        val latMarkers = buildLatitudeMarkers(latMax, latSpacingDeg, latSpacingWidthDeg)
-        plot.addPlot(ColouredItem(latMarkers, Color.BLACK))
+        addLongitudeMarkers(plot)
+        addLatitudeMarkers(latMaxDeg, latSpacingDeg, latSpacingWidthDeg, plot)
 
         val points = underTest.buildCourse(start, end, n)
         plot.addPlot(ColouredItem(Path(points), Color.RED))
         testGraphPlot(plot, "red-course")
     }
 
-    private fun buildLatitudeMarkers(latMax: Double, spacingDeg: Double, widthDeg: Double): Path {
-        val yValues = calculateLatitudeMarkers(latMax, spacingDeg)
+    private fun addLatitudeMarkers(latMaxDeg: Double, spacingDeg: Double, widthDeg: Double, plot: Graph) {
+        val yValues = calculateLatitudeMarkers(latMaxDeg, spacingDeg)
         val halfWidth = degToRad(widthDeg)/2
+        val yLabelOffset = transforms.fromLatToMercatorY(spacingDeg)/10
 
         val values = ArrayList<Array<Double>>()
         yValues.forEach {
-            values.add(arrayOf(-halfWidth, it))
-            values.add(arrayOf(halfWidth, it))
+            val y = it.first
+            val label = it.second
 
-            values.add(arrayOf(-halfWidth, -it))
-            values.add(arrayOf(halfWidth, -it))
+            values.add(arrayOf(-halfWidth, y))
+            values.add(arrayOf(halfWidth, y))
+            if (y > 0.0) {
+                plot.addText(ColouredItem(TextItem(label, 1.5 * halfWidth, y - yLabelOffset, axisMarkerTextSize), Color.BLACK))
+            }
+
+            values.add(arrayOf(-halfWidth, -y))
+            values.add(arrayOf(halfWidth, -y))
+            if (-y < 0.0) {
+                plot.addText(ColouredItem(TextItem("-$label", -9 * halfWidth, -y - yLabelOffset, axisMarkerTextSize), Color.BLACK))
+            }
         }
 
-        return Path(values.toTypedArray(), false)
+        val latMarkersPath =  Path(values.toTypedArray(), false)
+        plot.addPlot(ColouredItem(latMarkersPath, Color.BLACK))
     }
 
-    private fun calculateLatitudeMarkers(latMax: Double, spacingDeg: Double): Collection<Double> {
-        val result = ArrayList<Double>()
-        val latSpacing = degToRad(spacingDeg)
+    private fun calculateLatitudeMarkers(latMaxDeg: Double, spacingDeg: Double): Collection<Pair<Double, String>> {
+        val result = ArrayList<Pair<Double, String>>()
 
-        var lat = 0.0
-        while (lat < latMax) {
-            result.add(transforms.fromLatToMercatorY(lat))
-            lat += latSpacing
+        var latDeg = 0.0
+        while (latDeg < latMaxDeg) {
+            val y = transforms.fromLatToMercatorY(degToRad(latDeg))
+            val latLabel = formatDeg(latDeg)
+            result.add(Pair(y, latLabel))
+            latDeg += spacingDeg
         }
 
         return result
     }
 
+    private fun addLongitudeMarkers(plot: Graph) {
+        val yOffset = 2*transforms.fromLatToMercatorY(degToRad(lonSpacingHeightDeg))
+
+        var lonDeg = 0.0
+        while (lonDeg < 180.0) {
+            val x = transforms.fromLonToMercatorX(degToRad(lonDeg))
+            if (x != 0.0) {
+                val lonLabel = formatDeg(lonDeg)
+                plot.addText(ColouredItem(TextItem(lonLabel, x - yOffset/2, -1.2 * yOffset, axisMarkerTextSize), Color.BLACK))
+                plot.addText(ColouredItem(TextItem("-$lonLabel", -x - yOffset, yOffset, axisMarkerTextSize), Color.BLACK))
+            }
+
+            lonDeg += lonSpacingDeg
+        }
+    }
+
     private fun degToRad(deg: Double) = Math.PI*deg/180
+
+    private fun formatDeg(v: Double) = (degFormat.format(v) + "\u00b0")
 }
