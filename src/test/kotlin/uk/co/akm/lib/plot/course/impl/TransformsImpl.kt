@@ -21,12 +21,12 @@ class TransformsImpl(private val r: Double) : Transforms {
         coordinates[Coordinates.LON_INDEX] = Math.asin(point3d[Transforms.Z_INDEX] / p)
     }
 
-    override fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>) {
-        point2d[Transforms.X_INDEX] = fromLonToMercatorX(coordinates[Coordinates.LON_INDEX])
-        point2d[Transforms.Y_INDEX] = fromLatToMercatorY(coordinates[Coordinates.LAT_INDEX])
+    override fun fromCoordinatesToCylindricalPoint(coordinates: Array<Double>, point2d: Array<Double>) {
+        point2d[Transforms.X_INDEX] = fromLonToCylindricalX(coordinates[Coordinates.LON_INDEX])
+        point2d[Transforms.Y_INDEX] = fromLatToCylindricalY(coordinates[Coordinates.LAT_INDEX])
     }
 
-    override fun fromLonToMercatorX(lon: Double): Double = r * lon
+    override fun fromLonToCylindricalX(lon: Double): Double = r * lon
 
-    override fun fromLatToMercatorY(lat: Double): Double = r * Math.tan(lat)
+    override fun fromLatToCylindricalY(lat: Double): Double = r * Math.tan(lat)
 }

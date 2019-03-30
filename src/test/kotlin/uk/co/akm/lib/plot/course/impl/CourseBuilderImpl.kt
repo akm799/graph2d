@@ -35,7 +35,7 @@ class CourseBuilderImpl(r: Double) : CourseBuilder {
             point3d[Transforms.Y_INDEX] = y1 + i*delta[Transforms.Y_INDEX]
             point3d[Transforms.Z_INDEX] = z1 + i*delta[Transforms.Z_INDEX]
             transforms.from3dPointToCoordinates(point3d, point2d)
-            transforms.fromCoordinatesToMercatorPoint(point2d, mercatorPoints[i])
+            transforms.fromCoordinatesToCylindricalPoint(point2d, mercatorPoints[i])
         }
 
         return mercatorPoints

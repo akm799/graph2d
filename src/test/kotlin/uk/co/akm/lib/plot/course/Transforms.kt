@@ -15,9 +15,9 @@ interface Transforms {
 
     fun from3dPointToCoordinates(point3d: Array<Double>, coordinates: Array<Double>)
 
-    fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>)
+    fun fromCoordinatesToCylindricalPoint(coordinates: Array<Double>, point2d: Array<Double>)
 
-    fun fromLonToMercatorX(lon: Double): Double
+    fun fromLonToCylindricalX(lon: Double): Double
 
-    fun fromLatToMercatorY(lat: Double): Double
+    fun fromLatToCylindricalY(lat: Double): Double
 }
