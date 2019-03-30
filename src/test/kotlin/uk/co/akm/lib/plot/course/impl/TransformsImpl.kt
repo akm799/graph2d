@@ -39,7 +39,7 @@ class TransformsImpl(private val r: Double) : Transforms {
     override fun fromLonToMercatorX(lon: Double): Double = r * lon
 
     // https://luckytoilet.wordpress.com/2010/11/07/notes-on-mercators-projection/
-    override fun fromLatToMercatorY(lat: Double): Double = r * (sec(lat) + Math.tan(lat))
+    override fun fromLatToMercatorY(lat: Double): Double = r * Math.log(sec(lat) + Math.tan(lat))
 
     private fun sec(theta: Double) = 1/Math.cos(theta)
 }
