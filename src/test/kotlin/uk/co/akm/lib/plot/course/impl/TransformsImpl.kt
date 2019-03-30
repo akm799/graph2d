@@ -35,7 +35,11 @@ class TransformsImpl(private val r: Double) : Transforms {
         point2d[Transforms.Y_INDEX] = fromLatToMercatorY(coordinates[Coordinates.LAT_INDEX])
     }
 
+    // https://luckytoilet.wordpress.com/2010/11/07/notes-on-mercators-projection/
     override fun fromLonToMercatorX(lon: Double): Double = r * lon
 
-    override fun fromLatToMercatorY(lat: Double): Double = r * (Math.tan(lat) + 1/Math.cos(lat))
+    // https://luckytoilet.wordpress.com/2010/11/07/notes-on-mercators-projection/
+    override fun fromLatToMercatorY(lat: Double): Double = r * (sec(lat) + Math.tan(lat))
+
+    private fun sec(theta: Double) = 1/Math.cos(theta)
 }
