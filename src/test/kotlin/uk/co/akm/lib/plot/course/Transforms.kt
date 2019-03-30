@@ -20,4 +20,10 @@ interface Transforms {
     fun fromLonToCylindricalX(lon: Double): Double
 
     fun fromLatToCylindricalY(lat: Double): Double
+
+    fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>)
+
+    fun fromLonToMercatorX(lon: Double): Double
+
+    fun fromLatToMercatorY(lat: Double): Double
 }

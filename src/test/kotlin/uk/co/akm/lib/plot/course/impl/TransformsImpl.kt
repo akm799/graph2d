@@ -29,4 +29,13 @@ class TransformsImpl(private val r: Double) : Transforms {
     override fun fromLonToCylindricalX(lon: Double): Double = r * lon
 
     override fun fromLatToCylindricalY(lat: Double): Double = r * Math.tan(lat)
+
+    override fun fromCoordinatesToMercatorPoint(coordinates: Array<Double>, point2d: Array<Double>) {
+        point2d[Transforms.X_INDEX] = fromLonToMercatorX(coordinates[Coordinates.LON_INDEX])
+        point2d[Transforms.Y_INDEX] = fromLatToMercatorY(coordinates[Coordinates.LAT_INDEX])
+    }
+
+    override fun fromLonToMercatorX(lon: Double): Double = r * lon
+
+    override fun fromLatToMercatorY(lat: Double): Double = r * (Math.tan(lat) + 1/Math.cos(lat))
 }
