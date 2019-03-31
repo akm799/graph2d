@@ -2,7 +2,7 @@ package uk.co.akm.lib.plot.course
 
 import org.junit.Test
 import uk.co.akm.lib.plot.course.impl.CourseBuilderImpl
-import uk.co.akm.lib.plot.course.impl.TransformsImpl
+import uk.co.akm.lib.plot.course.impl.cylindricalInstance
 import uk.co.akm.lib.plot.model.*
 import uk.co.akm.lib.plot.testGraphPlot
 import java.awt.Color
@@ -12,9 +12,13 @@ import java.text.DecimalFormat
  * Created by Thanos Mavroidis on 28/01/2019.
  */
 class CourseTest {
+    private val mercatorLatTextOffsetFactor = 6
+    private val cylindricalLatTextOffsetFactor = 3
+
     private val r = 1.0
-    private val transforms = TransformsImpl(r)
-    private val underTest: CourseBuilder = CourseBuilderImpl(r)
+    private val latTextOffsetFactor = cylindricalLatTextOffsetFactor
+    private val transforms = cylindricalInstance(r)
+    private val underTest: CourseBuilder = CourseBuilderImpl(transforms)
 
     private val latSpacingDeg = 10.0
     private val latSpacingWidthDeg = 4.0
@@ -26,9 +30,6 @@ class CourseTest {
 
     private val axisMarkerTextSize = 8
     private val degFormat = DecimalFormat("0")
-
-    private val mercatorLatTextOffsetFactor = 6
-    private val cylindricalLatTextOffsetFactor = 3
 
     @Test
     fun shouldPlotCourse() {
@@ -58,7 +59,7 @@ class CourseTest {
         val axesDim = AxesDim(0.0, 0.0, lonSpacing, 0.0, lonSpacingHeight, 0.0)
 
         val latMax = degToRad(latMaxDeg)
-        val yMax = transforms.fromLatToCylindricalY(latMax)
+        val yMax = transforms.fromLatToProjectionY(latMax)
         val dimensions = PlotDim(pixelWidth, pixelHeight, -Math.PI, Math.PI, -yMax, yMax)
         val plot = Graph(ColouredItem(dimensions, Color.WHITE), ColouredItem(axesDim, Color.BLACK))
 
@@ -73,7 +74,7 @@ class CourseTest {
     private fun addLatitudeMarkers(latMaxDeg: Double, spacingDeg: Double, widthDeg: Double, plot: Graph) {
         val yValues = calculateLatitudeMarkers(latMaxDeg, spacingDeg)
         val halfWidth = r * degToRad(widthDeg)/2
-        val yLabelOffset = transforms.fromLatToCylindricalY(degToRad(spacingDeg))/cylindricalLatTextOffsetFactor
+        val yLabelOffset = transforms.fromLatToProjectionY(degToRad(spacingDeg))/latTextOffsetFactor
 
         val values = ArrayList<Array<Double>>()
         yValues.forEach {
@@ -102,7 +103,7 @@ class CourseTest {
 
         var latDeg = 0.0
         while (latDeg < latMaxDeg) {
-            val y = transforms.fromLatToCylindricalY(degToRad(latDeg))
+            val y = transforms.fromLatToProjectionY(degToRad(latDeg))
             val latLabel = formatDeg(latDeg)
             result.add(Pair(y, latLabel))
             latDeg += spacingDeg
@@ -112,11 +113,11 @@ class CourseTest {
     }
 
     private fun addLongitudeMarkers(plot: Graph) {
-        val yOffset = 2*transforms.fromLatToCylindricalY(degToRad(lonSpacingHeightDeg))
+        val yOffset = 2*transforms.fromLatToProjectionY(degToRad(lonSpacingHeightDeg))
 
         var lonDeg = 0.0
         while (lonDeg < 180.0) {
-            val x = transforms.fromLonToCylindricalX(degToRad(lonDeg))
+            val x = transforms.fromLonToProjectionX(degToRad(lonDeg))
             if (x != 0.0) {
                 val lonLabel = formatDeg(lonDeg)
                 plot.addText(ColouredItem(TextItem(lonLabel, x - yOffset/2, -1.2 * yOffset, axisMarkerTextSize), Color.BLACK))

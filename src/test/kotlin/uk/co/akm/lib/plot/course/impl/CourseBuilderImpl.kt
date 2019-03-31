@@ -7,9 +7,7 @@ import uk.co.akm.lib.plot.course.Transforms
 /**
  * Created by Thanos Mavroidis on 28/01/2019.
  */
-class CourseBuilderImpl(r: Double) : CourseBuilder {
-    private val transforms: Transforms = TransformsImpl(r)
-
+class CourseBuilderImpl(private val transforms: Transforms) : CourseBuilder {
     private val point2d = Array<Double>(2, { 0.0 })
     private val point3d = Array<Double>(3, { 0.0 })
 
@@ -35,7 +33,7 @@ class CourseBuilderImpl(r: Double) : CourseBuilder {
             point3d[Transforms.Y_INDEX] = y1 + i*delta[Transforms.Y_INDEX]
             point3d[Transforms.Z_INDEX] = z1 + i*delta[Transforms.Z_INDEX]
             transforms.from3dPointToCoordinates(point3d, point2d)
-            transforms.fromCoordinatesToCylindricalPoint(point2d, mercatorPoints[i])
+            transforms.fromCoordinatesToProjectionPoint(point2d, mercatorPoints[i])
         }
 
         return mercatorPoints
