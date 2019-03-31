@@ -27,6 +27,9 @@ class CourseTest {
     private val axisMarkerTextSize = 8
     private val degFormat = DecimalFormat("0")
 
+    private val mercatorLatTextOffsetFactor = 6
+    private val cylindricalLatTextOffsetFactor = 3
+
     @Test
     fun shouldPlotCourse() {
         plotCourse(80.0, 50.0, -77.5, 50.0, 77.5, 100)
@@ -69,8 +72,8 @@ class CourseTest {
 
     private fun addLatitudeMarkers(latMaxDeg: Double, spacingDeg: Double, widthDeg: Double, plot: Graph) {
         val yValues = calculateLatitudeMarkers(latMaxDeg, spacingDeg)
-        val halfWidth = degToRad(widthDeg)/2
-        val yLabelOffset = transforms.fromLatToCylindricalY(spacingDeg)/10
+        val halfWidth = r * degToRad(widthDeg)/2
+        val yLabelOffset = transforms.fromLatToCylindricalY(degToRad(spacingDeg))/cylindricalLatTextOffsetFactor
 
         val values = ArrayList<Array<Double>>()
         yValues.forEach {
