@@ -3,6 +3,7 @@ package uk.co.akm.lib.plot.course
 import org.junit.Test
 import uk.co.akm.lib.plot.course.impl.CourseBuilderImpl
 import uk.co.akm.lib.plot.course.impl.cylindricalInstance
+import uk.co.akm.lib.plot.course.impl.mercatorInstance
 import uk.co.akm.lib.plot.model.*
 import uk.co.akm.lib.plot.testGraphPlot
 import java.awt.Color
@@ -11,13 +12,27 @@ import java.text.DecimalFormat
 /**
  * Created by Thanos Mavroidis on 28/01/2019.
  */
-class CourseTest {
+open class CourseTest(projection: ProjectionType) {
     private val mercatorLatTextOffsetFactor = 6
     private val cylindricalLatTextOffsetFactor = 3
 
     private val r = 1.0
-    private val latTextOffsetFactor = cylindricalLatTextOffsetFactor
-    private val transforms = cylindricalInstance(r)
+
+    private val latTextOffsetFactor = when (projection) {
+        ProjectionType.CYLINDRICAL -> cylindricalLatTextOffsetFactor
+        ProjectionType.MERCATOR -> mercatorLatTextOffsetFactor
+    }
+
+    private val transforms = when (projection) {
+        ProjectionType.CYLINDRICAL -> cylindricalInstance(r)
+        ProjectionType.MERCATOR -> mercatorInstance(r)
+    }
+
+    private val fileName = when (projection) {
+        ProjectionType.CYLINDRICAL -> "red-course-cylindrical"
+        ProjectionType.MERCATOR -> "red-course-mercator"
+    }
+
     private val underTest: CourseBuilder = CourseBuilderImpl(transforms)
 
     private val latSpacingDeg = 10.0
@@ -31,12 +46,7 @@ class CourseTest {
     private val axisMarkerTextSize = 8
     private val degFormat = DecimalFormat("0")
 
-    @Test
-    fun shouldPlotCourse() {
-        plotCourse(80.0, 50.0, -77.5, 50.0, 77.5, 100)
-    }
-
-    private fun plotCourse(
+    protected fun plotCourse(
             latMaxDeg: Double,
             startLatDeg: Double,
             startLonDeg: Double,
@@ -68,7 +78,7 @@ class CourseTest {
 
         val points = underTest.buildCourse(start, end, n)
         plot.addPlot(ColouredItem(Path(points), Color.RED))
-        testGraphPlot(plot, "red-course")
+        testGraphPlot(plot, fileName)
     }
 
     private fun addLatitudeMarkers(latMaxDeg: Double, spacingDeg: Double, widthDeg: Double, plot: Graph) {
